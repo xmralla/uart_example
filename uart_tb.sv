@@ -1,24 +1,47 @@
 module uart_tb;
     parameter BIT_CLK = 8;
 
-    reg[7:0] txdata1 = 0;
     reg clk = 0;
-    reg cts = 0;
-    wire control1;
 
+    wire control1;
+    wire control2;
+
+    wire serial1;
+    wire serial2;
+
+
+    reg[7:0] txdata1 = 0;
+    reg[7:0] txdata2 = 0;
+
+
+    wire[7:0] rxdata1;
+    wire[7:0] rxdata2;
 
     uart_core #(.BIT_CLK(BIT_CLK)) u1
     (
         .clk   (clk),
         .cts   (control1),
+        .rts   (control2),
+        .rxdata(rxdata1),
         .txdata(txdata1),
-        .txd   (txd)
+        .txd   (serial1),
+        .rxd   (serial2)
+    );
+
+    uart_core #(.BIT_CLK(BIT_CLK)) u2
+    (
+        .clk   (clk),
+        .cts   (control2),
+        .rts   (control1),
+        .rxdata(rxdata2),
+        .txdata(txdata2),
+        .rxd   (serial1),
+        .txd   (serial2)
     );
 
     initial
     begin
         #(BIT_CLK);
-        cts <= !cts;
         txdata1 <= 'h77;
         #(150*BIT_CLK);
         txdata1 <= 'haa;
@@ -31,5 +54,4 @@ module uart_tb;
         #(BIT_CLK)
         clk <= !clk;
     end
-    assign control1 = cts;
 endmodule

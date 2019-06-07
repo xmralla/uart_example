@@ -4,12 +4,13 @@ module uart_core
     )
     (
         input        clk,
-        input        cts,
-        input [7:0]  txdata,
-        input        rxd,
-        output       rts,
-        output       txd,
-        output [7:0] rxdata
+        input        cts, // from rts
+        input [7:0]  txdata, // from host 
+        input        rxd, // from txd
+
+        output       rts, // to cts
+        output       txd, // to rxd
+        output [7:0] rxdata // to host
 
     );
     uart_tx #(.BIT_CLK(BIT_CLK)) tx
@@ -18,5 +19,13 @@ module uart_core
         .cts   (cts),
         .txdata(txdata),
         .txd   (txd)
+    );
+
+    uart_rx #(.BIT_CLK(BIT_CLK)) rx
+    (
+        .clk   (clk),
+        .rts   (rts),
+        .rxdata(rxdata),
+        .rxd   (rxd)
     );
 endmodule
