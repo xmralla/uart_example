@@ -52,10 +52,10 @@ module uart_rx
                 begin
                     state <= CLEAN;
                 end
-
         endcase
     end
 
+    // read data
     always @(posedge clk)
     begin
         if(state == DATA && count == 0)
@@ -63,44 +63,36 @@ module uart_rx
             data[index] <= rxd;
         end
     end
+   
+    // clock divider count
     always @(posedge clk)
     begin
-        case (state)
-            START:
-                begin
-                    if(count == BIT_CLK-1)
-                    begin
-                        count <= 0;
-                    end
-                    else
-                        count <= count + 1;
-                end
-            DATA:
-                begin
-                    if(count == BIT_CLK-1)
-                    begin
-                        count <= 0;
-                        index <= index + 1;
-                    end
-                    else
-                        count <= count + 1;
-                end
-            STOP:
-                begin
-                    if(count == BIT_CLK-1)
-                        count <= 0;
-                    else
-                        count <= count + 1;
-                end
-            CLEAN:
-                begin
-                    count <= 0;
-                    index <= 0;
-                    cts   <= 1;
-                end
-        endcase
+        if(state == CLEAN)
+        begin
+            count <= 0;
+        end
+        else if(state != IDLE)
+        begin
+            if(count == BIT_CLK-1)
+                count <= 0;
+            else
+                count <= count + 1;
+        end
     end
-    assign rts = cts;
+   
+    // count received serial data
+    always @(posedge clk)
+    begin
+        if (state == DATA)
+        begin
+            if(count == BIT_CLK-1)
+            begin
+                index <= index + 1;
+            end
+        end
+    end
+
+    assign rts    = cts;
     assign rxdata = data;
 
 endmodule
