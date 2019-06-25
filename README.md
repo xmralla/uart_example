@@ -10,15 +10,15 @@ Build default target
     
 Build Verilator target
     
-    make ver-all
+    make ver-build
     
 Build Icarus target
     
-    make iver-all
+    make iver-build
     
 Build Modelsim target
     
-    make msim-all
+    make msim-build
 
 ## Run test
 
