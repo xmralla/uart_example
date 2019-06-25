@@ -18,7 +18,7 @@ module uart_rx
     reg       cts   = 1;
     reg [7:0] data  = 0;
     reg [7:0] count = 0;
-    reg [3:0] index = 0;
+    reg [2:0] index = 0;
 
     // state
     always @(posedge clk)

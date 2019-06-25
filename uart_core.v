@@ -13,7 +13,7 @@ module uart_core
         output [7:0] rxdata // to host
 
     );
-    uart_tx #(.BIT_CLK(BIT_CLK)) tx
+    uart_tx #(.BIT_CLK(BIT_CLK)) tx_u
     (
         .clk   (clk),
         .cts   (cts),
@@ -21,7 +21,7 @@ module uart_core
         .txd   (txd)
     );
 
-    uart_rx #(.BIT_CLK(BIT_CLK)) rx
+    uart_rx #(.BIT_CLK(BIT_CLK)) rx_u
     (
         .clk   (clk),
         .rts   (rts),
