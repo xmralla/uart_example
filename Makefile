@@ -9,18 +9,21 @@ SRC = uart_tx.v\
 	  uart_rx.v \
 	  uart_core.v
 
-msim-build:
-	rm -rf work
+msim-clean:
+	if [ -d work ]; then  rm -rf work; fi
+msim-build: msim-clean
 	vlib work
 	vlog +incdir+$(LIBDIR) $(SRC) uart_tb.sv
 
-iver-build:
-	rm a.out
-	iverilog $(SRC) uart_tb.sv
+iver-clean:
+	if [ -f $(VER_TOP) ]; then  rm $(VER_TOP); fi
+iver-build: iver-clean
+	iverilog $(SRC) uart_tb.sv -o $(VER_TOP)
 
-ver-build:
-	rm -rf ./obj_dir
-	rm -rf logs
+ver-clean:
+	if [ -d obj_dir ]; then rm -rf obj_dir; fi
+	if [ -d logs ]; then rm -rf logs; fi
+ver-build: ver-clean
 	verilator $(VER_FLAGS) $(SRC) --exe test.cpp --top-module $(VER_TOP) --prefix $(VER_PREFIX)
 	make -j -C obj_dir -f $(VER_PREFIX).mk $(TOP)
 
@@ -33,4 +36,4 @@ ver-test: ver-build
 
 test: ver-test
 
-all: 
+all: ver-test
