@@ -4,18 +4,29 @@
 
 ## Building
 
-    Build default target
+Build default target
+    
     make all
-    Build Verilator target
+    
+Build Verilator target
+    
     make ver-all
-    Build Icarus target
+    
+Build Icarus target
+    
     make iver-all
-    Build Modelsim target
+    
+Build Modelsim target
+    
     make msim-all
 
 ## Run test
-    Run default test example
+
+Run default test example
+    
     make test
-    Run Modelsim test example
+
+Run Modelsim test example
+
     make msim-test
 
