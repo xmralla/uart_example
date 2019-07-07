@@ -17,6 +17,7 @@ module uart_core
     uart_tx #(.BIT_CLK(BIT_CLK)) tx_u
     (
         .clk   (clk),
+        .reset (reset),
         .cts   (cts),
         .txdata(txdata),
         .txd   (txd)
@@ -25,6 +26,7 @@ module uart_core
     uart_rx #(.BIT_CLK(BIT_CLK)) rx_u
     (
         .clk   (clk),
+        .reset (reset),
         .rts   (rts),
         .rxdata(rxdata),
         .rxd   (rxd)
