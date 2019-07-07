@@ -4,7 +4,7 @@ module uart_rx
     )
     (
         input        clk,
-        input        reset;
+        input        reset,
         output       rts,
         output [7:0] rxdata,
         input        rxd
