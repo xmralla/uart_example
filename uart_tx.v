@@ -24,48 +24,61 @@ module uart_tx
     // state
     always @(posedge clk)
     begin
-        case (state)
-            IDLE:
-                begin
-                    if (cts)
+        if(reset)
+        begin
+            state <= CLEAN;
+        end
+        else
+        begin
+            case (state)
+                IDLE:
                     begin
-                        state <= START;
+                        if (cts)
+                        begin
+                            state <= START;
+                        end
                     end
-                end
-            START:
-                begin
-                    if(count == BIT_CLK-1)
-                        state <= DATA;
-                end
-            DATA:
-                begin
-                    if (index == 7 && count == 7)
-                        state <= STOP;
-                end
-            STOP:
-                begin
-                    if(count == BIT_CLK-1)
+                START:
+                    begin
+                        if(count == BIT_CLK-1)
+                            state <= DATA;
+                    end
+                DATA:
+                    begin
+                        if (index == 7 && count == 7)
+                            state <= STOP;
+                    end
+                STOP:
+                    begin
+                        if(count == BIT_CLK-1)
+                            state <= CLEAN;
+                    end
+                CLEAN:
+                    begin
+                        state <= IDLE;
+                    end
+                default:
+                    begin
                         state <= CLEAN;
-                end
-            CLEAN:
-                begin
-                    state <= IDLE;
-                end
-            default:
-                begin
-                    state <= CLEAN;
-                end
+                    end
 
-        endcase
+            endcase
+        end
     end
 
     // load data to TX buffer
     always @(posedge clk)
     begin
-        if (state  ==IDLE)
+        if(reset)
         begin
-            if (cts)
+            data <= 0;
+        end
+        else
+        begin
+            if (state == IDLE)
+            begin
                 data  <= txdata;
+            end
         end
     end
 

@@ -16,7 +16,7 @@ module uart_rx
                CLEAN = 4;
 
     reg [2:0] state = CLEAN;
-    reg       cts   = 1;
+    reg       cts   = 0;
     reg [7:0] data  = 0;
     reg [7:0] count = 0;
     reg [2:0] index = 0;
@@ -24,71 +24,115 @@ module uart_rx
     // state
     always @(posedge clk)
     begin
-        case (state)
-            IDLE:
-                begin
-                    if(rxd == 0)
-                        state <= START;
-                end
-            START:
-                begin
-                    if(count == BIT_CLK-1)
-                        state <= DATA;
-                end
-            DATA:
-                begin
-                    if (index == 7 && count == 7)
-                        state <= STOP;
-                end
-            STOP:
-                begin
-                    if(count == BIT_CLK-1)
+        if(reset)
+        begin
+            state <= CLEAN;
+        end
+        else
+        begin
+            case (state)
+                IDLE:
+                    begin
+                        if(rxd == 0)
+                            state <= START;
+                    end
+                START:
+                    begin
+                        if(count == BIT_CLK-1)
+                            state <= DATA;
+                    end
+                DATA:
+                    begin
+                        if (index == 7 && count == 7)
+                            state <= STOP;
+                    end
+                STOP:
+                    begin
+                        if(count == BIT_CLK-1)
+                            state <= CLEAN;
+                    end
+                CLEAN:
+                    begin
+                        state <= IDLE;
+                    end
+                default:
+                    begin
                         state <= CLEAN;
-                end
-            CLEAN:
-                begin
-                    state <= IDLE;
-                end
-            default:
-                begin
-                    state <= CLEAN;
-                end
-        endcase
+                    end
+            endcase
+        end
     end
 
     // read data
     always @(posedge clk)
     begin
-        if(state == DATA && count == 0)
+        if(reset)
         begin
-            data[index] <= rxd;
+            data  <= 0;
+        end
+        else
+        begin
+            if(state == DATA && count == 0)
+            begin
+                data[index] <= rxd;
+            end
         end
     end
    
     // clock divider count
     always @(posedge clk)
     begin
-        if(state == CLEAN)
+        if(reset)
         begin
-            count <= 0;
+            count  <= 0;
         end
-        else if(state != IDLE)
+        else
         begin
-            if(count == BIT_CLK-1)
+            if(state == CLEAN)
+            begin
                 count <= 0;
-            else
-                count <= count + 1;
+            end
+            else if(state != IDLE)
+            begin
+                if(count == BIT_CLK-1)
+                    count <= 0;
+                else
+                    count <= count + 1;
+            end
         end
     end
    
     // count received serial data
     always @(posedge clk)
     begin
-        if (state == DATA)
+        if(reset)
         begin
-            if(count == BIT_CLK-1)
+            index  <= 0;
+        end
+        else
+        begin
+            if (state == DATA)
             begin
-                index <= index + 1;
+                if(count == BIT_CLK-1)
+                begin
+                    index <= index + 1;
+                end
+            end
+        end
+    end
+
+     //cts
+    always @(posedge clk)
+    begin
+        if(reset)
+        begin
+            cts <= 0;
+        end
+        else
+        begin
+            if(state == IDLE)
+            begin
+                cts <= 1;
             end
         end
     end
