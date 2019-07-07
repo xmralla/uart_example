@@ -38,6 +38,20 @@ module uart_tb;
         .rxd   (serial1),
         .txd   (serial2)
     );
+reg [7:0] a;
+reg [7:0] b;
+
+initial
+  a = 0;
+
+initial
+  b = a;
+
+initial
+  begin
+    #1;
+    $display("Value a=%d Value of b=%d",a,b);
+end    
 
     initial
     begin
