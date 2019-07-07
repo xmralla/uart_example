@@ -4,6 +4,7 @@ module uart_core
     )
     (
         input        clk,
+        inout        reset,
         input        cts, // from rts
         input [7:0]  txdata, // from host 
         input        rxd, // from txd
