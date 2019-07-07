@@ -4,6 +4,7 @@ module uart_tx
     )
     (
         input       clk,
+        input       reset,
         input       cts,
         input [7:0] txdata,
         output      txd
