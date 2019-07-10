@@ -9,6 +9,7 @@ module uart_tb;
     wire serial1;
     wire serial2;
 
+    reg[7:0] timer = 0;
 
     reg[7:0] txdata1 = 0;
     reg[7:0] txdata2 = 0;
@@ -38,34 +39,30 @@ module uart_tb;
         .rxd   (serial1),
         .txd   (serial2)
     );
-reg [7:0] a;
-reg [7:0] b;
-
-initial
-  a = 0;
-
-initial
-  b = a;
-
-initial
-  begin
-    #1;
-    $display("Value a=%d Value of b=%d",a,b);
-end    
 
     initial
     begin
         #(BIT_CLK);
-        txdata1 <= 'h77;
-        #(150*BIT_CLK);
+        txdata1 <= 'hff;
+        #(80*BIT_CLK*2);
+        assert(rxdata2 == 'hff);
+        #(BIT_CLK);
         txdata1 <= 'haa;
-        #(150*BIT_CLK);
+        #(80*BIT_CLK*2);
+        assert(rxdata2 == 'haa);
+        #(BIT_CLK);
         txdata1 <= 'h33;
+        #(80*BIT_CLK*2);
+        assert(rxdata2 == 'h33);
     end
     
     always
     begin
         #(BIT_CLK)
         clk <= !clk;
+        if(!clk)
+        begin
+            timer <= timer + 1;
+        end
     end
 endmodule

@@ -15,11 +15,11 @@ module uart_rx
                STOP  = 3,
                CLEAN = 4;
 
-    reg [2:0] state = CLEAN;
-    reg       cts   = 0;
-    reg [7:0] data  = 0;
-    reg [7:0] count = 0;
-    reg [2:0] index = 0;
+    reg [2:0] state   = CLEAN;
+    reg       flow_en = 0;
+    reg [7:0] data    = 0;
+    reg [7:0] count   = 0;
+    reg [2:0] index   = 0;
 
     // state
     always @(posedge clk)
@@ -31,34 +31,34 @@ module uart_rx
         else
         begin
             case (state)
-                IDLE:
-                    begin
-                        if(rxd == 0)
-                            state <= START;
-                    end
-                START:
-                    begin
-                        if(count == BIT_CLK-1)
-                            state <= DATA;
-                    end
-                DATA:
-                    begin
-                        if (index == 7 && count == 7)
-                            state <= STOP;
-                    end
-                STOP:
-                    begin
-                        if(count == BIT_CLK-1)
-                            state <= CLEAN;
-                    end
-                CLEAN:
-                    begin
-                        state <= IDLE;
-                    end
-                default:
-                    begin
+            IDLE:
+                begin
+                    if(rxd == 0)
+                        state <= START;
+                end
+            START:
+                begin
+                    if(count == BIT_CLK-1)
+                        state <= DATA;
+                end
+            DATA:
+                begin
+                    if (index == 7 && count == 7)
+                        state <= STOP;
+                end
+            STOP:
+                begin
+                    if(count == BIT_CLK-1)
                         state <= CLEAN;
-                    end
+                end
+            CLEAN:
+                begin
+                    state <= IDLE;
+                end
+            default:
+                begin
+                    state <= CLEAN;
+                end
             endcase
         end
     end
@@ -121,23 +121,23 @@ module uart_rx
         end
     end
 
-     //cts
+     // flow control
     always @(posedge clk)
     begin
         if(reset)
         begin
-            cts <= 0;
+            flow_en <= 0;
         end
         else
         begin
             if(state == IDLE)
             begin
-                cts <= 1;
+                flow_en <= 1;
             end
         end
     end
 
-    assign rts    = cts;
+    assign rts    = flow_en;
     assign rxdata = data;
 
 endmodule

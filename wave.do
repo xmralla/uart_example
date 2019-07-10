@@ -1,10 +1,8 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -radix hexadecimal /uart_tb/clk
-add wave -noupdate -radix hexadecimal /uart_tb/txdata1
-add wave -noupdate -radix hexadecimal /uart_tb/txdata2
-add wave -noupdate -radix hexadecimal /uart_tb/rxdata1
-add wave -noupdate -radix hexadecimal /uart_tb/rxdata2
+add wave -noupdate -radix hexadecimal /uart_tb/*
+add wave -noupdate -radix decimal /uart_tb/timer
+
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {0 ps} 0}
 quietly wave cursor active 0
